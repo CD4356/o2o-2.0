@@ -1,0 +1,31 @@
+#生产环境（线上服务器）
+
+#服务
+server:
+  port: 80  #tomcat端口号
+  servlet:
+    context-path: /o2o  #项目根路径/应用上下文路径
+
+
+#Redis配置属性
+redis:
+  #主机IP
+  host: 127.0.0.1
+  #Redis默认端口号
+  port: 6379
+  #Redis服务器连接密码（默认为空）
+  password:
+  #Redis数据库索引（默认为0），redis默认提供16个数据库（0-15）
+  database: 0
+  #jedis连接池
+  pool:
+    #连接池中允许的最大连接数(默认值为8)：即能同时建立的‘最大连接个数’，连接全部用完，则需进行等待（使用负值表示没有限制）
+    max-active: 1024
+    #允许池中空闲的最小连接数：低于minIdle时，将创建新的连接
+    min-idle: 0
+    #连接池中最多可空闲maxIdle个连接(默认值为8) ，这里取值为100，表示即使没有数据库连接时依然可以保持100空闲的连接，而不被清除，随时处于待命状态
+    max-idle: 100
+    #等待可用连接的最大时间，单位毫秒，默认值为-1，表示永不超时。如果超过等待时间，则直接抛出JedisConnectionException；
+    max-wait: 15000
+    #连接超时时间（毫秒）
+    timeout: 5000

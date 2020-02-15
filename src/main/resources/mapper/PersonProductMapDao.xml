@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cd.o2o.dao.PersonProductMapDao">
+
+    <!--表字段与实体类属性关系映射-->
+    <resultMap id="personProductMap" type="PersonProductMap">
+        <id column="person_product_id" property="personProductId" javaType="Long"/>
+        <result column="point" property="point" javaType="Integer"/>
+        <result column="create_time" property="createTime" javaType="java.util.Date"/>
+        <association column="user_id" property="person" javaType="Person">
+            <id column="user_id" property="userId"/>
+            <result column="name" property="name"/>
+        </association>
+        <association column="product_id" property="product" javaType="Product">
+            <id column="product_id" property="productId"/>
+            <result column="product_name" property="productName"/>
+            <result column="img_address" property="imgAddress"/>
+            <result column="normal_price" property="normalPrice"/>
+            <result column="promotion_price" property="promotionPrice"/>
+        </association>
+        <association column="shop_id" property="shop">
+            <id column="shop_id" property="shopId"/>
+            <result column="shop_name" property="shopName"/>
+        </association>
+    </resultMap>
+
+    <!--根据查询条件，分页返回用户购买商品的记录列表-->
+    <select id="queryPersonProductMapList" resultMap="personProductMap">
+        SELECT
+        ppm.person_product_id,
+        ppm.point,
+        ppm.create_time,
+        u.user_id,
+        u.name,
+        p.product_id,
+        p.product_name,
+        p.img_address,
+        p.normal_price,
+        p.promotion_price,
+        s.shop_id,
+        s.shop_name
+        FROM
+        person_product_map ppm,
+        person u,
+        product p,
+        shop s
+        <where>
+            ppm.user_id = u.user_id
+            AND
+            ppm.product_id = p.product_id
+            AND
+            ppm.shop_id = s.shop_id
+            <!--根据顾客id查询-->
+            <if test="personProductMapCondition.person != null and personProductMapCondition.person.userId != null">
+                AND ppm.user_id = #{personProductMapCondition.person.userId}
+            </if>
+            <!--根据顾客名字模糊查询-->
+            <if test="personProductMapCondition.person != null and personProductMapCondition.person.name != null">
+                AND u.name LIKE '%${personProductMapCondition.person.name}%'
+            </if>
+            <!--根据店铺id查询-->
+            <if test="personProductMapCondition.shop != null and personProductMapCondition.shop.shopId != null">
+                AND ppm.shop_id = #{personProductMapCondition.shop.shopId}
+            </if>
+            <!--根据商品id查询-->
+            <if test="personProductMapCondition.product != null and personProductMapCondition.product.productId != null">
+                AND ppm.product_id = #{personProductMapCondition.product.productId}
+            </if>
+            <!--根据商品名称模糊查询-->
+            <if test="personProductMapCondition.product != null and personProductMapCondition.product.productName != null">
+                AND p.product_name LIKE '%${personProductMapCondition.product.productName}%'
+            </if>
+            <!--根据日期查询-->
+            <if test="personProductMapCondition.createTime != null">
+                AND ppm.create_time = #{personProductMapCondition.createTime}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        limit #{rowIndex},#{pageSize}
+    </select>
+
+    <!--根据查询条件返回用户购买商品的记录总数-->
+    <select id="queryPersonProductMapCount" resultType="Integer">
+        SELECT COUNT(1) FROM
+        person_product_map ppm,
+        person u,
+        product p,
+        shop s
+        <where>
+            ppm.user_id = u.user_id
+            AND
+            ppm.product_id = p.product_id
+            AND
+            ppm.shop_id = s.shop_id
+            <!--根据顾客id查询-->
+            <if test="personProductMapCondition.person != null and personProductMapCondition.person.userId != null">
+                AND ppm.user_id = #{personProductMapCondition.person.userId}
+            </if>
+            <!--根据顾客名字模糊查询-->
+            <if test="personProductMapCondition.person != null and personProductMapCondition.person.name != null">
+                AND u.name LIKE '%${personProductMapCondition.person.name}%'
+            </if>
+            <!--根据店铺id查询-->
+            <if test="personProductMapCondition.shop != null and personProductMapCondition.shop.shopId != null">
+                AND ppm.shop_id = #{personProductMapCondition.shop.shopId}
+            </if>
+            <!--根据商品id查询-->
+            <if test="personProductMapCondition.product != null and personProductMapCondition.product.productId != null">
+                AND ppm.product_id = #{personProductMapCondition.product.productId}
+            </if>
+            <!--根据商品名称模糊查询-->
+            <if test="personProductMapCondition.product != null and personProductMapCondition.product.productName != null">
+                AND p.product_name LIKE '%${personProductMapCondition.product.productName}%'
+            </if>
+            <!--根据日期查询-->
+            <if test="personProductMapCondition != null and personProductMapCondition.createTime != null">
+                AND ppm.create_time = #{personProductMapCondition.createTime}
+            </if>
+        </where>
+    </select>
+
+    <!--添加用户购买商品的记录-->
+    <insert id="insertPersonProductMap" keyColumn="person_product_id" keyProperty="personProductId"
+            useGeneratedKeys="true" parameterType="PersonProductMap">
+        INSERT INTO person_product_map
+        (point,create_time,user_id,product_id,shop_id)
+        VALUES
+        (#{point},#{createTime},#{person.userId},#{product.productId},#{shop.shopId})
+    </insert>
+</mapper>
