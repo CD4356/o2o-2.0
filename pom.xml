@@ -78,7 +78,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.45</version>
+            <version>1.2.83</version>
         </dependency>
         <!-- Map工具类 对标准java Collection的扩展 spring-core.jar需commons-collections.jar -->
         <dependency>
